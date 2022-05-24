@@ -1,0 +1,140 @@
+/* 
+    Created on : Apr 15, 2022, 3:29:51 PM
+    Author     : Mahabub
+*/
+
+.private-plugin a {
+    position: relative;
+    padding-left: 20px !important;
+}
+.private-plugin .dashicons {
+    position: absolute;
+    left: 0;
+}
+.private-plugin-store-wrap {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    background: #fff;
+    transform: translate(-50%,-50%);
+    max-height: 80%;
+    box-sizing: border-box;
+    width: 80%;
+    z-index: 999999;
+    height: 80%;
+    border: 1px solid #ddd;
+    border-radius: 0px;
+}
+.plugin-store-header {
+    display: flex;
+    padding: 10px 20px;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+}
+.plugin-store-header .private-plugin-store-title {
+    margin: 0;
+    margin-right: 40px;
+}
+.plugin-search-wrap .private-plugin-search {
+    border: 1px solid #ddd;
+    border-radius: 0;
+    min-width: 200px;
+}
+.plugin-search-wrap {
+    position: relative;
+}
+.plugin-search-wrap .searchClear {
+    display: none;
+    position: absolute;
+    right: 7px;
+    top: 5px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 3px;
+}
+.private-plugin-store-inner-close {
+    font-size: 30px;
+    line-height: .0;
+    cursor: pointer;
+    position: absolute;
+    right: 15px;
+    top: 22px;
+}
+
+.private-plugin-store-inner {
+    padding: 15px 15px;
+    height: calc(100% - 110px);
+    overflow-y: auto;
+}
+.private-plugin-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.private-plugin-card.collapse {
+    display: none;
+}
+/*Card*/
+.private-plugin-card {
+    padding: 20px;
+    border: 1px solid #eaeaea;
+    border-radius: 2px;
+    flex-basis: 30%;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    background: #f9f9f9;
+    flex-grow: 1;
+    margin-left: 10px;
+    margin-right: 10px;
+    position: relative;
+}
+.plugin-card-head {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.plugin-name {
+    font-size: 18px;
+    font-weight: 600;
+    color:#21759b;
+}
+.plugin-download-btn {
+    border: 1px solid rgba(0,0,0,.2);
+    background: #21759b;
+    padding: 4px 10px;
+    border-radius: 4px;
+    color: #fff;
+}
+.plugin-download-btn.Installed {
+    background: transparent;
+    color: #000;
+    cursor: not-allowed;
+}
+.private-plugin-card.plugin-exist {
+    opacity: 0.5;
+}
+.plugin-download-btn .dashicons {
+    width: initial;
+    height: initial;
+    margin-right: 6px;
+    font-size: 17px;
+}
+
+.private-plugin-message {
+    padding: 7px;
+    display: inline-block;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 16px;
+    box-sizing: border-box;
+}
+.success-message.private-plugin-message {
+    background: rgba(119, 187, 119, 0.89);
+    color: #fff;
+}
+.error-message.private-plugin-message {
+    background: rgba(232, 78, 78, 0.75);
+    color: #fff;
+}

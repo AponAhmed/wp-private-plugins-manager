@@ -1,0 +1,16 @@
+{
+    "name": "aponahmed/private-plugin-updater",
+    "description": "WP Private plugin update ftom Own Host",
+    "autoload": {
+        "psr-4": {
+            "PrivatePluginUpdater\\src\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "MD. Muhiminul Haque",
+            "email": "apon2041@gmail.com"
+        }
+    ],
+    "require": {}
+}
