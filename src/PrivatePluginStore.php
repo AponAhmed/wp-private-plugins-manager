@@ -34,7 +34,7 @@ class PrivatePluginStore {
     }
 
     function pluginsHook($views) {
-        $views['cleare-cache'] = "<a href='javascript:void(0)' onclick='clearCache(this)' title='Cleare Cache of Plugin Update-Data'>Check Update</a>";
+        $views['cleare-cache'] = "<a href='javascript:void(0)' onclick='clearCache(this,\"plugins\")' title='Cleare Cache of Plugin Update-Data'>Check Update</a>";
         return $views;
     }
 

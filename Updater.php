@@ -6,7 +6,7 @@
  * Description: To Update Personal Hosted Plugins 
  * Author: SiATEX
  * Author URI: https://www.siatex.com
- * Version: 1.0
+ * Version: 1.2
  * Text Domain: update-plugin-stex;
  */
 /**
@@ -18,6 +18,7 @@
 namespace PrivatePluginUpdater;
 
 use PrivatePluginUpdater\src\PrivatePluginStore;
+use PrivatePluginUpdater\src\PrivateThemeStore;
 
 define('__UPD_DIR', dirname(__FILE__));
 define('__UPD_ASSETS', plugin_dir_url(__FILE__) . "assets/");
@@ -29,30 +30,35 @@ require_once ABSPATH . 'wp-admin/includes/plugin.php';
 class Updater {
 
     use src\RemoteResource;
-   
+
     /**
-     * Remote Host Server URL 
-     * @var string
+     * Plugin Store Object 
+     * @var Object
      */
-    //public static string $rootPath = "https://siatexltd.com/wp-update-path/"; //"http://localhost/WPPlugins/"; //;
-    //public $cache_key = "plugin-update-data";
-    //$cache_allowed = false;
     public $PluginStore;
+
+    /**
+     * Theme Store
+     * @var Object
+     */
+    public $ThemeStore;
 
     //put your code here
     public function __construct() {
         if (is_admin()) {
             $this->getPrivatePlugins();
+            $this->getPrivateThemes();
             add_action('admin_enqueue_scripts', [$this, 'adminScript']);
 
             $this->PluginStore = new PrivatePluginStore();
-
-            if ($this->isPluginManager()) {
-                //$this->RemoteData = $this->getRemotePluginData();
-            }
+            $this->ThemeStore = new PrivateThemeStore();
         }
         $this->RemotePluginData = self::get('plugins', true);
-        add_filter('site_transient_update_plugins', array($this, 'updateTest'));
+        $this->RemoteThemeData = self::get('themes', true);
+        //Plugin transient 
+        add_filter('site_transient_update_plugins', array($this, 'set_update_for_plugin'));
+        //Themes transient
+        add_filter('site_transient_update_themes', array($this, 'theme_check_for_update'));
     }
 
     /**
@@ -72,47 +78,17 @@ class Updater {
      * Admin Script Init
      */
     function adminScript($hook) {
-        //var_dump(strpos($hook, 'plugin'));
-        if (strpos($hook, 'plugin') !== false) {
+        //var_dump(strpos($hook, 'themes'));
+        if (strpos($hook, 'plugin') !== false || strpos($hook, 'theme') !== false) {
             wp_enqueue_style('upd-admin-style', __UPD_ASSETS . 'admin-style.css');
             wp_enqueue_script('upd-admin-script', __UPD_ASSETS . 'admin-script.js', array('jquery'), '1.0');
             wp_localize_script('upd-admin-script', 'updobj', array('ajax_url' => admin_url('admin-ajax.php')));
         }
     }
 
-//    function getRemotePluginData() {
-//        $remote = get_transient($this->cache_key);
-//        if (false === $remote || !$this->cache_allowed) {
-//            $remote = wp_remote_get(
-//                    self::$rootPath . "plugins/",
-//                    array(
-//                        'timeout' => 10,
-//                        'headers' => array(
-//                            'Accept' => 'application/json'
-//                        )
-//                    )
-//            );
-//            if (
-//                    is_wp_error($remote) || 200 !== wp_remote_retrieve_response_code($remote) || empty(wp_remote_retrieve_body($remote))
-//            ) {
-//                return false;
-//            }
-//            set_transient($this->cache_key, $remote, DAY_IN_SECONDS);
-//        }
-//        $remote = json_decode(wp_remote_retrieve_body($remote));
-//        return $remote;
-//    }
-
-    public function updateTest($transient) {
-        //echo '<pre>';
-        //var_dump($transient);
-        //echo "-----------------------------------------------------------------------------------------";
-        //exit();        
+    public function set_update_for_plugin($transient) {
         if (!$this->RemotePluginData) {
             return $transient;
-        }
-        if (empty($transient->checked)) {
-            // return $transient;
         }
         //var_dump($this->plugins);
         //echo "</pre>";
@@ -146,8 +122,45 @@ class Updater {
         return $transient;
     }
 
-    function purgeCache() {
-        //delete_transient($this->cache_key);
+    /**
+     * 
+     * @param object $transient
+     */
+    function theme_check_for_update($transient) {
+        //echo "<pre>";
+        if (!$transient) {
+            return new \stdClass();
+        }
+        if (!$this->RemoteThemeData) {
+            return $transient;
+        }
+        //echo "<pre>";
+
+        $remotArr = (array) $this->RemoteThemeData;
+        //var_dump($remotArr);
+        foreach ($this->themes as $slug => $theme) {
+            //$remoteTheme
+            if (array_key_exists($slug, $remotArr)) {
+                $remoteThme = (array) $remotArr[$slug];
+                $localThemeV = $theme['Version'];
+                if (version_compare($localThemeV, $remoteThme['Version'], '<')) {
+                    //var_dump($remoteThme);
+                    $res = [
+                        "theme" => $slug,
+                        "new_version" => $remoteThme['Version'],
+                        "url" => $remoteThme['Theme URI'],
+                        "package" => self::$rootPath . "themes/" . $remoteThme['sourceFile'],
+                        "requires_php" => $remoteThme['Requires PHP'],
+                        "requires" => $remoteThme['Requires'],
+                    ];
+                    //var_dump($slug);
+                    $transient->response[$slug] = $res;
+                }
+            }
+        }
+        //var_dump($transient);
+        //exit;
+        return $transient;
     }
 
 }

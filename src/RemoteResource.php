@@ -2,11 +2,25 @@
 
 namespace PrivatePluginUpdater\src;
 
+use PrivatePluginUpdater\src\LocalThemes;
+
 /**
  *
  * @author apon
  */
 trait RemoteResource {
+
+    /**
+     * HOST API Root
+     * @var string
+     */
+    public static string $rootPath = "https://siatexltd.com/wp-update-path/"; //"http://localhost/WPPlugins/"; //;
+
+    /**
+     * Key For Auth
+     * @var string
+     */
+    private static string $key = "1qazxsw23edcvfr4";
 
     /**
      * Private Authors
@@ -19,19 +33,47 @@ trait RemoteResource {
      * @var array
      */
     public array $plugins;
+
+    /**
+     * Local Themes by Private Authors
+     * @var array
+     */
+    public array $themes;
+
+    /**
+     * Remote Private Plugins Data
+     * @var type Object
+     */
     public $RemotePluginData;
-    private static string $key = "1qazxsw23edcvfr4";
+
+    /**
+     * Remote Private Theme Data
+     * @var type Object
+     */
+    public $RemoteThemeData;
+
+    /**
+     * remote Information cache Key
+     * @var string
+     */
     private static string $PluginCache_key = "remote_private_plugins";
-    public static string $rootPath = "https://siatexltd.com/wp-update-path/"; //"http://localhost/WPPlugins/"; //;
+    private static string $ThemeCache_key = "remote_private_theme";
 
     public static function get($subDir, $cache = false) {
-        if (!$cache) {
-            delete_transient(self::$PluginCache_key);
+        $cacheKey = "";
+        if ($subDir == "plugins") {
+            $cacheKey = self::$PluginCache_key;
+        } elseif ($subDir == "themes") {
+            $cacheKey = self::$ThemeCache_key;
         }
-        $remote = get_transient(self::$PluginCache_key);
+
+        if (!$cache) {
+            delete_transient($cacheKey);
+        }
+        $remote = get_transient($cacheKey);
+
         //var_dump($remote);
         if (false === $remote || !$cache) {
-            //echo "not Cache";
             $remote = wp_remote_get(
                     self::$rootPath . "$subDir" . "/index.php?key=" . self::$key,
                     array(
@@ -46,7 +88,7 @@ trait RemoteResource {
             ) {
                 return false;
             }
-            set_transient(self::$PluginCache_key, $remote, DAY_IN_SECONDS);
+            set_transient($cacheKey, $remote, DAY_IN_SECONDS);
         }
 
         $remoteDataBody = json_decode(wp_remote_retrieve_body($remote));
@@ -55,11 +97,18 @@ trait RemoteResource {
     }
 
     /**
-     *  Have to make option to clear remote data cache 
+     * 
+     *  Clear remote data cache  For Plugin's and Themes Remote Information
      */
     public function cleanCache() {
-        delete_transient(self::$PluginCache_key);
-        //echo "Cache Cleaned";
+        if (isset($_POST['module'])) {
+            if ($_POST['module'] == "plugins") {
+                delete_transient(self::$PluginCache_key);
+            }
+            if ($_POST['module'] == "themes") {
+                delete_transient(self::$ThemeCache_key);
+            }
+        }
     }
 
     /**
@@ -74,6 +123,15 @@ trait RemoteResource {
         });
 
         $this->plugins = $privatePlugins;
+    }
+
+    /**
+     * To Filter Private Plugins by authors
+     */
+    public function getPrivateThemes() {
+        $this->themes = LocalThemes::themes(self::$authors);
+
+        // var_dump(self::get('themes', true));
     }
 
 }

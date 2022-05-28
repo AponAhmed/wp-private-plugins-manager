@@ -138,3 +138,14 @@
     background: rgba(232, 78, 78, 0.75);
     color: #fff;
 }
+
+/*Theme Update and Store Part*/
+.themes-update-check {
+    position: absolute;
+    right: 120px;
+    top: 25px;
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 4px 10px;
+    border-radius: 4px;
+}

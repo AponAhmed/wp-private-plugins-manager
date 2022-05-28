@@ -1,3 +1,22 @@
+jQuery(document).ready(function () {
+    if (pagenow == "themes") {
+        jQuery(".wp-header-end").before("<button type='button' class='themes-update-check' onclick='clearCache(this,\"themes\")'>Check For Update</button>");
+    }
+    if (pagenow == "theme-install") {
+        jQuery(".wp-header-end").before("<button type='button' class='themes-update-check' onclick='PrivateThemeBrowse(this)'>Private Theme</button>");
+    }
+})
+
+function PrivateThemeBrowse(_this) {
+    let btn = jQuery(_this);
+    btn.find(".dashicons").remove();
+    btn.prepend('<span class="dashicons dashicons-update loading"></span>');
+    var data = {action: "BrowsePrivateThemes"};
+    jQuery.post(updobj.ajax_url, data, function (response) {
+        btn.find(".dashicons").remove();
+        themeStoreView(response);
+    });
+}
 
 function BrowsePrivatePlugins(_this) {
     let btn = jQuery(_this);
@@ -8,6 +27,10 @@ function BrowsePrivatePlugins(_this) {
         btn.find(".dashicons").remove();
         pluginStoreView(response);
     });
+}
+
+function themeStoreView(elements) {
+
 }
 
 function pluginStoreView(elements) {
@@ -53,11 +76,11 @@ function searchClear(_this) {
     jQuery(".private-plugin-card").removeClass('collapse');
 }
 
-function clearCache(_this) {
+function clearCache(_this, module) {
     let btn = jQuery(_this);
     btn.find(".dashicons").remove();
     btn.prepend('<span class="dashicons dashicons-update loading"></span>');
-    var data = {action: "clearCache"};
+    var data = {action: "clearCache", module: module};
     jQuery.post(updobj.ajax_url, data, function (response) {
         btn.find(".dashicons").remove();
         window.location.reload();
