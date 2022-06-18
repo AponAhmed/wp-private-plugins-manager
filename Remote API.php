@@ -2,54 +2,51 @@
 
 namespace WPPluginPublisher;
 
-class Publisher
-{
+class Publisher {
+
     private static $key = "1qazxsw23edcvfr4";
-    private static  $JSONFile = "info.json";
-    private static  $dir;
-    public  $plugins;
-    public static  $authors = ['siatex', 'apon','Zakiul Islam','apon ahmed'];
-    public static  $PluginHeaders = ['Plugin Name', 'Plugin URI', 'Version', 'Description', 'Author', 'Author URI', 'License', 'Requires PHP', 'Requires'];
+    private static $JSONFile = "info.json";
+    private static $dir;
+    public $plugins;
+    public static $authors = ['siatex', 'apon', 'zakiul islam', 'apon ahmed'];
+    public static $PluginHeaders = ['Plugin Name', 'Plugin URI', 'Version', 'Description', 'Author', 'Author URI', 'License', 'Requires PHP', 'Requires'];
+    public static $ThemeHeaders = [];
 
-    public static  $ThemeHeaders = [];
-
-    public function __construct()
-    {
+    public function __construct() {
         self::auth();
         //sleep(3);
         self::$dir = dirname(__FILE__);
         $this->FindAllPlugins();
         $this->response();
     }
-    
-    public static function auth(){
-        $error="";
-        if(isset($_GET['key'])){
-            if(empty($_GET['key'])){
-                $error="Key Empty";
-            }else{
-                if($_GET['key']==self::$key){
+
+    public static function auth() {
+        $error = "";
+        if (isset($_GET['key'])) {
+            if (empty($_GET['key'])) {
+                $error = "Key Empty";
+            } else {
+                if ($_GET['key'] == self::$key) {
                     return true;
-                }else{
-                   $error="Incorrect KEY";  
+                } else {
+                    $error = "Incorrect KEY";
                 }
             }
-        }else{
-             $error="Key Not Set";
+        } else {
+            $error = "Key Not Set";
         }
-        
+
         header("HTTP/1.1 403 Access Denied");
         echo json_encode([
-           'error'=>['message'=>"Access Denied, $error"]
-           ]);
+            'error' => ['message' => "Access Denied, $error"]
+        ]);
         exit;
     }
 
     /**
      * Find All Plugins
      */
-    public function FindAllPlugins()
-    {
+    public function FindAllPlugins() {
         $scanned_directory = array_diff(scandir(self::$dir), array('..', '.'));
         foreach ($scanned_directory as $files) {
             //var_dump(self::$dir ."/". $files);
@@ -78,8 +75,7 @@ class Publisher
     /**
      * Read File Content
      */
-    private function readFileContent($phpfile)
-    {
+    private function readFileContent($phpfile) {
         if (file_exists($phpfile)) {
             $fp = @fopen($phpfile, 'r');
             // Pull only the first 8kiB of the file in.
@@ -98,12 +94,10 @@ class Publisher
         }
     }
 
-
     /**
      * Plugin Information Parse
      */
-    public function parsePluginData($string)
-    {
+    public function parsePluginData($string) {
         $all_headers = [];
         foreach (self::$PluginHeaders as $field) {
             if (preg_match('/^[ \t\/*#@]*' . preg_quote($field, '/') . ':(.*)$/mi', $string, $match) && $match[1])
@@ -111,32 +105,30 @@ class Publisher
                     $all_headers[$field] = trim($match[1]);
                 } else {
                     $all_headers[$field] = trim($match[1]);
-                }
-            else
+                } else
                 $all_headers[$field] = '';
         }
-        if (isset($all_headers['Plugin Name']) && !empty($all_headers['Plugin Name']) && in_array(strtolower($all_headers['Author']), self::$authors)) {
+
+        if (isset($all_headers['Plugin Name']) && !empty($all_headers['Plugin Name']) && in_array(strtolower(trim($all_headers['Author'])), self::$authors)) {
             return $all_headers;
         }
         return false;
     }
 
-
     /**
      * Render Response
      */
-    public function response()
-    {
+    public function response() {
         echo json_encode($this->plugins);
     }
 
     /**
      * init Publisher Object
      */
-    public static function init()
-    {
+    public static function init() {
         return new Publisher;
     }
+
 }
 
 header('Content-Type: application/json; charset=utf-8');

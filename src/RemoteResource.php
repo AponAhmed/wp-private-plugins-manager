@@ -26,7 +26,7 @@ trait RemoteResource {
      * Private Authors
      * @var array
      */
-    public static array $authors = ['siatex', 'apon ahmed', 'apon', 'Zakiul Islam'];
+    public static array $authors = ['siatex', 'apon ahmed', 'apon', 'zakiul islam'];
 
     /**
      * Private Plugins
