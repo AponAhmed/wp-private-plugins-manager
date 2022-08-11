@@ -113,13 +113,13 @@ class Updater {
                     $res->new_version = $remotePlugin->Version;
                     $res->tested = true;
                     $res->package = self::$rootPath . "plugins/" . $remotePlugin->sourceFile;
-                    
+
                     if (property_exists($transient, 'response')) {
                         if (!is_array($transient->response)) {
                             $transient->response = [];
                         }
                     }
-                    
+
                     $transient->response[$res->plugin] = $res;
                 }
             }
@@ -161,6 +161,12 @@ class Updater {
                         "requires" => $remoteThme['Requires'],
                     ];
                     //var_dump($slug);
+                    if (property_exists($transient, 'response')) {
+                        if (!is_array($transient->response)) {
+                            $transient->response = [];
+                        }
+                    }
+
                     $transient->response[$slug] = $res;
                 }
             }
