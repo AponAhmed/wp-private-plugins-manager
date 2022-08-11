@@ -87,6 +87,10 @@ class Updater {
     }
 
     public function set_update_for_plugin($transient) {
+        if (!$transient) {
+            $transient = new \stdClass();
+            $transient->response = [];
+        }
         if (!$this->RemotePluginData) {
             return $transient;
         }
@@ -119,7 +123,6 @@ class Updater {
                             $transient->response = [];
                         }
                     }
-
                     $transient->response[$res->plugin] = $res;
                 }
             }
@@ -136,7 +139,8 @@ class Updater {
     function theme_check_for_update($transient) {
         //echo "<pre>";
         if (!$transient) {
-            return new \stdClass();
+            $transient = new \stdClass();
+            $transient->response = [];
         }
         if (!$this->RemoteThemeData) {
             return $transient;
@@ -166,7 +170,6 @@ class Updater {
                             $transient->response = [];
                         }
                     }
-
                     $transient->response[$slug] = $res;
                 }
             }
