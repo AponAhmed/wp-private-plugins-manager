@@ -6,7 +6,7 @@
  * Description: To Update Personal Hosted Plugins 
  * Author: SiATEX
  * Author URI: https://www.siatex.com
- * Version: 1.5
+ * Version: 1.6
  * Text Domain: update-plugin-stex;
  */
 /**
@@ -113,6 +113,13 @@ class Updater {
                     $res->new_version = $remotePlugin->Version;
                     $res->tested = true;
                     $res->package = self::$rootPath . "plugins/" . $remotePlugin->sourceFile;
+                    
+                    if (property_exists($transient, 'response')) {
+                        if (!is_array($transient->response)) {
+                            $transient->response = [];
+                        }
+                    }
+                    
                     $transient->response[$res->plugin] = $res;
                 }
             }
