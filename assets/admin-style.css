@@ -111,7 +111,15 @@
     cursor: not-allowed;
 }
 .private-plugin-card.plugin-exist {
-    opacity: 0.5;
+    opacity: 1;
+    border-color: #21759b;
+    border-width: 2px;
+}
+.plugin-control {
+    display: flex;
+}
+.plugin-control button {
+    margin: 0 2px;
 }
 .plugin-download-btn .dashicons {
     width: initial;
@@ -127,11 +135,11 @@
     width: 100%;
     position: absolute;
     left: 0;
-    top: 16px;
+    top: 60px;
     box-sizing: border-box;
 }
 .success-message.private-plugin-message {
-    background: rgba(119, 187, 119, 0.89);
+    background: rgba(33, 117, 155,.8);
     color: #fff;
 }
 .error-message.private-plugin-message {

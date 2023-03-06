@@ -108,8 +108,35 @@ function downloadPrivatePlugin(slug, _this) {
                 card.find(".private-plugin-message").remove();
                 card.addClass('plugin-exist');
                 card.find(".plugin-download-btn").removeClass("Install").addClass("Installed").html("Installed");
+                card.find(".plugin-download-btn").after('<button class="plugin-download-btn active-plugin-btn" onclick="activePlugin(\'' + slug + '\',this)">Active</button>');
             }, 1500);
         }
 
+    });
+}
+
+function activePlugin(slug, _this) {
+    let btn = jQuery(_this);
+    let card = jQuery(_this).closest(".private-plugin-card");
+    btn.find(".dashicons").remove();
+    btn.prepend('<span class="dashicons dashicons-update loading"></span>');
+    var data = {action: "ActivePrivatePlugin", slug: slug};
+    jQuery.post(updobj.ajax_url, data, function (response) {
+        btn.find(".dashicons").remove();
+        let obj = JSON.parse(response);
+        //console.log(obj);
+        if (obj.error) {
+            card.prepend("<span class='error-message private-plugin-message'>" + obj.message + "</span>");
+            setTimeout(function () {
+                card.find(".private-plugin-message").remove();
+            }, 1000);
+        } else {
+            card.prepend("<span class='success-message private-plugin-message'>" + obj.message + "</span>");
+            setTimeout(function () {
+                card.find(".private-plugin-message").remove();
+                //card.addClass('plugin-exist');
+                card.find(".active-plugin-btn").addClass('Installed').html("Activeted");
+            }, 1500);
+        }
     });
 }
