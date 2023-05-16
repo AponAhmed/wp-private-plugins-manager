@@ -18,6 +18,8 @@ class PrivatePluginStore {
 
     function hookReg() {
         add_filter('views_plugin-install', array($this, 'privatePluginModule'), 10, 1);
+        add_filter('views_plugin-install-network', array($this, 'privatePluginModule'), 10, 1);
+        
         add_filter('plugin_install_action_links', array($this, 'action_links_wpse_119218'), 10, 2);
         //Browse Private Plugins Ajax Callback
         add_action("wp_ajax_BrowsePrivatePlugins", [$this, 'BrowsePrivatePlugins']);
@@ -26,6 +28,7 @@ class PrivatePluginStore {
         add_action("wp_ajax_ActivePrivatePlugin", [$this, 'ActivePrivatePlugin']);
 
         add_filter('views_plugins', array($this, 'pluginsHook'), 10, 1);
+        add_filter('views_plugins-network', array($this, 'pluginsHook'), 10, 1);
     }
 
     function privatePluginModule($views) {

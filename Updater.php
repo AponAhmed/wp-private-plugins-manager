@@ -6,7 +6,7 @@
  * Description: To Update Personal Hosted Plugins 
  * Author: SiATEX
  * Author URI: https://www.siatex.com
- * Version: 1.6.1
+ * Version: 1.6.2
  * Text Domain: update-plugin-stex;
  */
 /**
