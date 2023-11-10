@@ -14,7 +14,7 @@ trait RemoteResource {
      * HOST API Root
      * @var string
      */
-    public static string $rootPath = "https://siatexltd.com/wp-update-path/"; //"http://localhost/WPPlugins/"; //;
+    public static string $rootPath = "https://siatexltd.com/wp-update-path/";
 
     /**
      * Key For Auth
