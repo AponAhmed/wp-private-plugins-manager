@@ -89,4 +89,3 @@ class Publisher {
 
 This project is licensed under the [Your License] License - see the [LICENSE.md](LICENSE.md) file for details.
 
-For more information, visit [https://siatexltd.com/wp/plugins/plugin-updater](https://siatexltd.com/wp/plugins/plugin-updater).
