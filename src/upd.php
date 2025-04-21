@@ -12,14 +12,16 @@ namespace PluginUpdater;
  *
  * @author Mahabub
  */
-class mishaUpdateChecker {
+class mishaUpdateChecker
+{
 
     public $plugin_slug;
     public $version;
     public $cache_key;
     public $cache_allowed;
 
-    public function __construct() {
+    public function __construct()
+    {
 
         $this->plugin_slug = plugin_basename(__DIR__);
         $this->version = '1.0';
@@ -31,24 +33,25 @@ class mishaUpdateChecker {
         add_action('upgrader_process_complete', array($this, 'purge'), 10, 2);
     }
 
-    public function request() {
+    public function request()
+    {
 
         $remote = get_transient($this->cache_key);
 
         if (false === $remote || !$this->cache_allowed) {
 
             $remote = wp_remote_get(
-                    'https://rudrastyh.com/wp-content/uploads/updater/info.json',
-                    array(
-                        'timeout' => 10,
-                        'headers' => array(
-                            'Accept' => 'application/json'
-                        )
+                'https://rudrastyh.com/wp-content/uploads/updater/info.json',
+                array(
+                    'timeout' => 10,
+                    'headers' => array(
+                        'Accept' => 'application/json'
                     )
+                )
             );
 
             if (
-                    is_wp_error($remote) || 200 !== wp_remote_retrieve_response_code($remote) || empty(wp_remote_retrieve_body($remote))
+                is_wp_error($remote) || 200 !== wp_remote_retrieve_response_code($remote) || empty(wp_remote_retrieve_body($remote))
             ) {
                 return false;
             }
@@ -61,7 +64,8 @@ class mishaUpdateChecker {
         return $remote;
     }
 
-    function info($res, $action, $args) {
+    function info($res, $action, $args)
+    {
 
         // print_r( $action );
         // print_r( $args );
@@ -112,7 +116,8 @@ class mishaUpdateChecker {
         return $res;
     }
 
-    public function update($transient) {
+    public function update($transient)
+    {
 
         if (empty($transient->checked)) {
             return $transient;
@@ -121,7 +126,7 @@ class mishaUpdateChecker {
         $remote = $this->request();
 
         if (
-                $remote && version_compare($this->version, $remote->version, '<') && version_compare($remote->requires, get_bloginfo('version'), '<') && version_compare($remote->requires_php, PHP_VERSION, '<')
+            $remote && version_compare($this->version, $remote->version, '<') && version_compare($remote->requires, get_bloginfo('version'), '<') && version_compare($remote->requires_php, PHP_VERSION, '<')
         ) {
             $res = new stdClass();
             $res->slug = $this->plugin_slug;
@@ -136,10 +141,11 @@ class mishaUpdateChecker {
         return $transient;
     }
 
-    public function purge() {
+    public function purge()
+    {
 
         if (
-                $this->cache_allowed && 'update' === $options['action'] && 'plugin' === $options['type']
+            $this->cache_allowed && 'update' === $options['action'] && 'plugin' === $options['type']
         ) {
             // just clean the cache when new plugin version is installed
             delete_transient($this->cache_key);

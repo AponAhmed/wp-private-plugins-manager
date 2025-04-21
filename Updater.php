@@ -6,7 +6,8 @@
  * Description: To Update Personal Hosted Plugins 
  * Author: SiATEX
  * Author URI: https://www.siatex.com
- * Version: 1.6.2
+ * Version: 1.6.6
+ * PHP Version : 8.0
  * Text Domain: update-plugin-stex;
  */
 /**
@@ -18,6 +19,7 @@
 namespace PrivatePluginUpdater;
 
 use PrivatePluginUpdater\src\PrivatePluginStore;
+use PrivatePluginUpdater\src\PrivateSetup;
 use PrivatePluginUpdater\src\PrivateThemeStore;
 
 define('__UPD_DIR', dirname(__FILE__));
@@ -27,7 +29,8 @@ define('__UPD_ASSETS', plugin_dir_url(__FILE__) . "assets/");
 require 'vendor/autoload.php';
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
-class Updater {
+class Updater
+{
 
     use src\RemoteResource;
 
@@ -37,6 +40,8 @@ class Updater {
      */
     public $PluginStore;
 
+    public $currentPlugin;
+
     /**
      * Theme Store
      * @var Object
@@ -44,12 +49,14 @@ class Updater {
     public $ThemeStore;
 
     //put your code here
-    public function __construct() {
+    public function __construct()
+    {
         $this->getPrivatePlugins();
         $this->getPrivateThemes();
         if (is_admin()) {
             add_action('admin_enqueue_scripts', [$this, 'adminScript']);
-
+           // Initialize the class
+            new PrivateSetup();
             $this->PluginStore = new PrivatePluginStore();
             $this->ThemeStore = new PrivateThemeStore();
         }
@@ -66,7 +73,8 @@ class Updater {
      *
      * @return string
      */
-    function isPluginManager() {
+    function isPluginManager()
+    {
         $pInfo = pathinfo($_SERVER['SCRIPT_NAME']);
         if ($pInfo['basename'] == 'plugins.php') {
             return true;
@@ -77,7 +85,8 @@ class Updater {
     /**
      * Admin Script Init
      */
-    function adminScript($hook) {
+    function adminScript($hook)
+    {
         //var_dump(strpos($hook, 'themes'));
         if (strpos($hook, 'plugin') !== false || strpos($hook, 'theme') !== false) {
             wp_enqueue_style('upd-admin-style', __UPD_ASSETS . 'admin-style.css');
@@ -86,7 +95,8 @@ class Updater {
         }
     }
 
-    public function set_update_for_plugin($transient) {
+    public function set_update_for_plugin($transient)
+    {
         if (!$transient) {
             $transient = new \stdClass();
             $transient->response = [];
@@ -106,8 +116,8 @@ class Updater {
             if (array_key_exists($remotePlugin->slug, $this->plugins)) {
                 $this->currentPlugin = (object) $this->plugins[$remotePlugin->slug];
                 if (
-                        version_compare($this->currentPlugin->Version, $remotePlugin->Version, '<') &&
-                        version_compare($remotePlugin->Requires, get_bloginfo('version'), '<')
+                    version_compare($this->currentPlugin->Version, $remotePlugin->Version, '<') &&
+                    version_compare($remotePlugin->Requires, get_bloginfo('version'), '<')
                 ) {
                     // var_dump($remotePlugin->Version);
 
@@ -136,7 +146,8 @@ class Updater {
      * 
      * @param object $transient
      */
-    function theme_check_for_update($transient) {
+    function theme_check_for_update($transient)
+    {
         //echo "<pre>";
         if (!$transient) {
             $transient = new \stdClass();
@@ -178,7 +189,6 @@ class Updater {
         //exit;
         return $transient;
     }
-
 }
 
 new Updater();

@@ -7,19 +7,22 @@ namespace PrivatePluginUpdater\src;
  *
  * @author Mahabub
  */
-class PrivatePluginStore {
+class PrivatePluginStore
+{
 
     use RemoteResource;
 
     //put your code here
-    public function __construct() {
+    public function __construct()
+    {
         $this->hookReg();
     }
 
-    function hookReg() {
+    function hookReg()
+    {
         add_filter('views_plugin-install', array($this, 'privatePluginModule'), 10, 1);
         add_filter('views_plugin-install-network', array($this, 'privatePluginModule'), 10, 1);
-        
+
         add_filter('plugin_install_action_links', array($this, 'action_links_wpse_119218'), 10, 2);
         //Browse Private Plugins Ajax Callback
         add_action("wp_ajax_BrowsePrivatePlugins", [$this, 'BrowsePrivatePlugins']);
@@ -31,18 +34,21 @@ class PrivatePluginStore {
         add_filter('views_plugins-network', array($this, 'pluginsHook'), 10, 1);
     }
 
-    function privatePluginModule($views) {
+    function privatePluginModule($views)
+    {
         //Do your stuff
         $views['private-plugin'] = "<a href='javascript:void(0)' onclick='BrowsePrivatePlugins(this)'>Private Plugins</a>";
         return $views;
     }
 
-    function pluginsHook($views) {
+    function pluginsHook($views)
+    {
         $views['cleare-cache'] = "<a href='javascript:void(0)' onclick='clearCache(this,\"plugins\")' title='Cleare Cache of Plugin Update-Data'>Check Update</a>";
         return $views;
     }
 
-    function BrowsePrivatePlugins() {
+    function BrowsePrivatePlugins()
+    {
         $this->getPrivatePlugins();
 
         $data = self::get("plugins", true);
@@ -81,7 +87,8 @@ class PrivatePluginStore {
         wp_die();
     }
 
-    function ActivePrivatePlugin() {
+    function ActivePrivatePlugin()
+    {
         $resp = [];
         if (isset($_POST['slug']) && !empty($_POST['slug'])) {
             $activePlugins = get_option('active_plugins');
@@ -98,7 +105,8 @@ class PrivatePluginStore {
         wp_die();
     }
 
-    function downloadPrivatePlugin() {
+    function downloadPrivatePlugin()
+    {
         global $wp_filesystem;
         if (!$wp_filesystem) {
             WP_Filesystem();
@@ -136,7 +144,7 @@ class PrivatePluginStore {
                     $res['error'] = "Zip Archive Open Error";
                     $res['message'] = "Plugin file contains error with Zip Archive";
                 }
-//                $zip = New \ZipArchive();
+                //                $zip = New \ZipArchive();
 //                if ($zip->open($tempFile)) {
 //                    $extr = $zip->extractTo(trailingslashit(WP_PLUGIN_DIR));
 //                    //var_dump(trailingslashit(WP_PLUGIN_DIR));
@@ -155,7 +163,8 @@ class PrivatePluginStore {
     }
 
     // Function to remove folders and files 
-    function rrmdir($dir) {
+    function rrmdir($dir)
+    {
         if (is_dir($dir)) {
             $files = scandir($dir);
             foreach ($files as $file)
@@ -167,7 +176,8 @@ class PrivatePluginStore {
     }
 
     // Function to Copy folders and files       
-    function rcopy($src, $dst) {
+    function rcopy($src, $dst)
+    {
         if (file_exists($dst))
             $this->rrmdir($dst);
         if (is_dir($src)) {
@@ -183,7 +193,8 @@ class PrivatePluginStore {
     /**
      * Individual Plugin Action Link
      */
-    function action_links_wpse_119218($links, $plugin) {
+    function action_links_wpse_119218($links, $plugin)
+    {
         //var_dump($links);
         if (isset($_GET['tab'])) {
             switch ($_GET['tab']) {

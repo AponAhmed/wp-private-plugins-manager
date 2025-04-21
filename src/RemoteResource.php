@@ -8,19 +8,26 @@ use PrivatePluginUpdater\src\LocalThemes;
  *
  * @author apon
  */
-trait RemoteResource {
+trait RemoteResource
+{
 
     /**
      * HOST API Root
      * @var string
      */
-    public static string $rootPath = "https://siatexltd.com/wp-update-path/"; //"http://localhost/WPPlugins/"; //;
+    public static string $rootPath = "https://siatexltd.com/wp-update-path/";
 
     /**
      * Key For Auth
      * @var string
      */
     private static string $key = "1qazxsw23edcvfr4";
+
+    /**
+     * Password For Auth
+     * @var string
+     */
+    private static string $password = "";
 
     /**
      * Private Authors
@@ -59,7 +66,8 @@ trait RemoteResource {
     private static string $PluginCache_key = "remote_private_plugins";
     private static string $ThemeCache_key = "remote_private_theme";
 
-    public static function get($subDir, $cache = false) {
+    public static function get($subDir, $cache = false)
+    {
         $cacheKey = "";
         if ($subDir == "plugins") {
             $cacheKey = self::$PluginCache_key;
@@ -71,20 +79,24 @@ trait RemoteResource {
             delete_transient($cacheKey);
         }
         $remote = get_transient($cacheKey);
-
+        self::$rootPath = PrivateSetup::get_option('remote_url');
+        self::$key = PrivateSetup::get_option('key');
+        self::$password = PrivateSetup::get_option('password');
         //var_dump($remote);
         if (false === $remote || !$cache) {
             $remote = wp_remote_get(
-                    self::$rootPath . "$subDir" . "/index.php?key=" . self::$key,
-                    array(
-                        'timeout' => 10,
-                        'headers' => array(
-                            'Accept' => 'application/json'
-                        )
+                self::$rootPath . "$subDir" . "/index.php?key=" . self::$key . "&password=" . self::$password,
+                array(
+                    'timeout' => 10,
+                    'headers' => array(
+                        'Accept' => 'application/json'
                     )
+                )
             );
+            //var_dump($remote);
+
             if (
-                    is_wp_error($remote) || 200 !== wp_remote_retrieve_response_code($remote) || empty(wp_remote_retrieve_body($remote))
+                is_wp_error($remote) || 200 !== wp_remote_retrieve_response_code($remote) || empty(wp_remote_retrieve_body($remote))
             ) {
                 return false;
             }
@@ -100,7 +112,8 @@ trait RemoteResource {
      * 
      *  Clear remote data cache  For Plugin's and Themes Remote Information
      */
-    public function cleanCache() {
+    public function cleanCache()
+    {
         if (isset($_POST['module'])) {
             if ($_POST['module'] == "plugins") {
                 delete_transient(self::$PluginCache_key);
@@ -114,7 +127,8 @@ trait RemoteResource {
     /**
      * To Filter Private Plugins by authors
      */
-    public function getPrivatePlugins() {
+    public function getPrivatePlugins()
+    {
         $allPlugins = \get_plugins();
         $privatePlugins = array_filter($allPlugins, function ($plugin) {
             if (in_array(strtolower($plugin['Author']), self::$authors)) {
@@ -128,7 +142,8 @@ trait RemoteResource {
     /**
      * To Filter Private Plugins by authors
      */
-    public function getPrivateThemes() {
+    public function getPrivateThemes()
+    {
         $this->themes = LocalThemes::themes(self::$authors);
 
         // var_dump(self::get('themes', true));
